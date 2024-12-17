@@ -12,7 +12,7 @@ void Function(BuildContext)? deleteTapped;
     required this.name,
     required this.amount,
     required this.dateTime,
-    required this.deleteTapped
+    required this.deleteTapped,
   });
 
   @override
@@ -32,8 +32,9 @@ void Function(BuildContext)? deleteTapped;
       child: ListTile(
         title: Text(name),
         subtitle: Text(
-          '${dateTime.day} / ${dateTime.month} / ${dateTime.year}' ),
-        trailing: Text('Rp.' + amount)
+          '${dateTime.day} / ${dateTime.month} / ${dateTime.year}',
+        ),
+        trailing: Text('Rp.$amount')
       ),
     );
   }

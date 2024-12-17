@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import '../components/expense_summary.dart';
 import '../components/expense_tile.dart';
 import '../data/expense_data.dart';
 import '../models/expense_item.dart';
@@ -106,10 +106,12 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.grey[300],
         floatingActionButton: FloatingActionButton(
           onPressed: addNewExpense,
+          backgroundColor: Colors.black,
           child: const Icon(Icons.add),
         ),
         body: ListView(children: [
           // weekly summary
+          ExpenseSummary(startOfWeek: value.startOfWeekDate()),
 
           // exense list
           ListView.builder(

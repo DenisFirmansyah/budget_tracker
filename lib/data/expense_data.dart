@@ -3,7 +3,7 @@ import 'package:budget_tracker/datetime/date_time_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:flutter/material.dart';
 
-class ExpenseData extends ChangeNotifier{
+class ExpenseData extends ChangeNotifier {
 
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];

@@ -13,7 +13,7 @@ class ExpenseSummary extends StatelessWidget {
   });
 
   // calculate max amount in bar graph
-  double calcculateMax(
+  double calculateMax(
     ExpenseData value,
     String sunday,
     String monday,
@@ -79,17 +79,17 @@ class ExpenseSummary extends StatelessWidget {
     String sunday =
         convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
     String monday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 1)));
     String tuesday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 2)));
     String wednesday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 3)));
     String thursday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 4)));
     String friday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 5)));
     String saturday =
-        convertDateTimeToString(startOfWeek.add(const Duration(days: 0)));
+        convertDateTimeToString(startOfWeek.add(const Duration(days: 6)));
 
     return Consumer<ExpenseData>(
       builder: (context, value, child) => Column(
@@ -112,7 +112,7 @@ class ExpenseSummary extends StatelessWidget {
           SizedBox(
             height: 200,
             child: MyBarGraph(
-              maxY: calcculateMax(value, sunday, monday, tuesday, wednesday,
+              maxY: calculateMax(value, sunday, monday, tuesday, wednesday,
                   thursday, friday, saturday),
               sunAmount: value.calculateDailyExpenseSummary()[sunday] ?? 0,
               monAmount: value.calculateDailyExpenseSummary()[monday] ?? 0,
