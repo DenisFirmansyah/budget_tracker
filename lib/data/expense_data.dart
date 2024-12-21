@@ -133,4 +133,16 @@ class ExpenseData extends ChangeNotifier {
 
     return dailyExpenseSummary;
   }
+
+  getTotalIncome() {
+    return 0;
+  }
+
+  getTotalExpense() {
+    double total = 0;
+    for (var el in overallExpenseList) {
+      total += double.parse(el.amount);
+    }
+    return total;
+  }
 }
