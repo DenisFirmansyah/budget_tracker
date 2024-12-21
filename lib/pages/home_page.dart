@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
     // prepare data on staratup
     Provider.of<ExpenseData>(context, listen: false).prepareData();
   }
-  
+
   void addNewExpense() {
     showDialog(
       context: context,
@@ -53,16 +53,10 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           // save button
-          MaterialButton(
-            onPressed: save,
-            child: const Text('Save')
-          ),
+          MaterialButton(onPressed: save, child: const Text('Save')),
 
           // cancel button
-          MaterialButton(
-            onPressed: cancel,
-            child: const Text('Cancel')
-          ),
+          MaterialButton(onPressed: cancel, child: const Text('Cancel')),
         ],
       ),
     );
@@ -79,9 +73,9 @@ class _HomePageState extends State<HomePage> {
       name: newExpenseNameController.text,
       amount: newExpenseAmountController.text,
       dateTime: DateTime.now(),
-      );
+    );
 
-      // add the new expense
+    // add the new expense
     Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
 
     Navigator.pop(context);
@@ -109,24 +103,26 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.black,
           child: const Icon(Icons.add),
         ),
-        body: ListView(children: [
-          // weekly summary
-          ExpenseSummary(startOfWeek: value.startOfWeekDate()),
+        body: ListView(
+          children: [
+            // weekly summary
+            ExpenseSummary(startOfWeek: value.startOfWeekDate()),
 
-          // exense list
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: value.getAllExpenseList().length,
-            itemBuilder: (context, index) => ExpenseTile(
-              name: value.getAllExpenseList()[index].name,
-              amount: value.getAllExpenseList()[index].amount,
-              dateTime: value.getAllExpenseList()[index].dateTime,
-              deleteTapped: (p0) =>
-                  deleteExpense(value.getAllExpenseList()[index]),
+            // exense list
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: value.getAllExpenseList().length,
+              itemBuilder: (context, index) => ExpenseTile(
+                name: value.getAllExpenseList()[index].name,
+                amount: value.getAllExpenseList()[index].amount,
+                dateTime: value.getAllExpenseList()[index].dateTime,
+                deleteTapped: (p0) =>
+                    deleteExpense(value.getAllExpenseList()[index]),
+              ),
             ),
-          ),
-        ])
+          ],
+        ),
       ),
     );
   }

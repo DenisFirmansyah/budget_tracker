@@ -11,7 +11,6 @@ void main() async {
   // open a hive box
   await Hive.openBox("expense_database");
 
-
   runApp(const MyApp());
 }
 
@@ -25,7 +24,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: HomePage(),
-      )
+      ),
     );
   }
 }

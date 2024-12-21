@@ -26,7 +26,6 @@ class MyBarGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     //initialize the bar data
     BarData myBarData = BarData(
       sunAmount: sunAmount,
@@ -38,42 +37,42 @@ class MyBarGraph extends StatelessWidget {
       satAmount: satAmount,
     );
     myBarData.initializeBarData();
-    
-    return BarChart(BarChartData(
-      maxY: maxY,
-      minY: 0,
-      titlesData: FlTitlesData(
-        show: true,
-        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles:   true, getTitlesWidget: getBottomTitles,))
-      ),
-      gridData: FlGridData(show: false),
-      borderData: FlBorderData(show: true),
-      barGroups: myBarData.barData
-          .map(
-            (data) => BarChartGroupData(
-              x: data.x,
-              barRods: [
-                BarChartRodData(
-                  toY: data.y,
-                  color: Colors.grey[800],
-                  width: 25,
-                  borderRadius: BorderRadius.circular(4),
-                  backDrawRodData: BackgroundBarChartRodData(
-                    show: true,
-                    toY: maxY,
-                    color: Colors.grey[20],
-                  )
-                ),
-              ],
-            ),
-          )
-          .toList()
-    ));
-  }
 
+    return BarChart(BarChartData(
+        maxY: maxY,
+        minY: 0,
+        titlesData: FlTitlesData(
+            show: true,
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: getBottomTitles,
+            ))),
+        gridData: FlGridData(show: false),
+        borderData: FlBorderData(show: true),
+        barGroups: myBarData.barData
+            .map(
+              (data) => BarChartGroupData(
+                x: data.x,
+                barRods: [
+                  BarChartRodData(
+                      toY: data.y,
+                      color: Colors.grey[800],
+                      width: 25,
+                      borderRadius: BorderRadius.circular(4),
+                      backDrawRodData: BackgroundBarChartRodData(
+                        show: true,
+                        toY: maxY,
+                        color: Colors.grey[20],
+                      )),
+                ],
+              ),
+            )
+            .toList()));
+  }
 }
 
 Widget getBottomTitles(double value, TitleMeta meta) {

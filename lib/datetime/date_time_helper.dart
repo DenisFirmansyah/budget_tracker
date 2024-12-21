@@ -8,7 +8,7 @@ String convertDateTimeToString(DateTime dateTime) {
   if (month.length == 1) {
     month = '0$month';
   }
-  
+
   // day in the frmat -> dd
   String day = dateTime.day.toString();
   if (day.length == 1) {

@@ -103,7 +103,8 @@ class ExpenseSummary extends StatelessWidget {
                   'Week Total: ',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text('Rp.${calculateWeekTotal(value, sunday, monday, tuesday, wednesday, thursday, friday, saturday)}')
+                Text(
+                    'Rp.${calculateWeekTotal(value, sunday, monday, tuesday, wednesday, thursday, friday, saturday)}')
               ],
             ),
           ),

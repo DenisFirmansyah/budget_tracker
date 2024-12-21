@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ExpenseTile extends StatelessWidget {
-final String name;
-final String amount;
-final DateTime dateTime;
-void Function(BuildContext)? deleteTapped;
+  final String name;
+  final String amount;
+  final DateTime dateTime;
+  void Function(BuildContext)? deleteTapped;
 
   ExpenseTile({
     super.key,
@@ -22,20 +22,20 @@ void Function(BuildContext)? deleteTapped;
         motion: const StretchMotion(),
         children: [
           // delete button
-          SlidableAction(onPressed: deleteTapped,
-          icon: Icons.delete,
-          backgroundColor: Colors.red,
-          borderRadius: BorderRadius.circular(4),
+          SlidableAction(
+            onPressed: deleteTapped,
+            icon: Icons.delete,
+            backgroundColor: Colors.red,
+            borderRadius: BorderRadius.circular(4),
           ),
         ],
       ),
       child: ListTile(
-        title: Text(name),
-        subtitle: Text(
-          '${dateTime.day} / ${dateTime.month} / ${dateTime.year}',
-        ),
-        trailing: Text('Rp.$amount')
-      ),
+          title: Text(name),
+          subtitle: Text(
+            '${dateTime.day} / ${dateTime.month} / ${dateTime.year}',
+          ),
+          trailing: Text('Rp.$amount')),
     );
   }
 }

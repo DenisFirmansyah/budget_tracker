@@ -31,7 +31,6 @@ class BarData {
       IndividualBar(x: 4, y: thurAmount),
       IndividualBar(x: 5, y: friAmount),
       IndividualBar(x: 6, y: satAmount),
-      
     ];
   }
 }

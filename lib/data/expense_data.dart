@@ -4,7 +4,6 @@ import 'package:budget_tracker/models/expense_item.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseData extends ChangeNotifier {
-
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];
 
@@ -13,16 +12,17 @@ class ExpenseData extends ChangeNotifier {
     return overallExpenseList;
   }
 
-// prepare data to display
-final db = HiveDataBase();
-void prepareData() {
-  // if there exists data, get it
-  if (db.readData().isNotEmpty) {
-    overallExpenseList = db.readData();
+  // prepare data to display
+  final db = HiveDataBase();
+  void prepareData() {
+    // if there exists data, get it
+    if (db.readData().isNotEmpty) {
+      overallExpenseList = db.readData();
+    }
   }
-}
+
   // add new expense
-  void addNewExpense (ExpenseItem newExpense) {
+  void addNewExpense(ExpenseItem newExpense) {
     overallExpenseList.add(newExpense);
 
     notifyListeners();
@@ -30,7 +30,7 @@ void prepareData() {
   }
 
   // delete expense
-  void deleteExpense (ExpenseItem Expense) {
+  void deleteExpense(ExpenseItem Expense) {
     overallExpenseList.remove(Expense);
 
     notifyListeners();
@@ -38,26 +38,26 @@ void prepareData() {
   }
 
   // get weekday (mon, tues, etc) from datTime object
-String getDayName(DateTime dateTime) {
-  switch (dateTime.weekday) {
-    case 1:
-      return 'Mon';
-    case 2:
-      return 'Tue';
-    case 3:
-      return 'Wed';
-    case 4:
-      return 'Thurs';
-    case 5:
-      return 'Fri';
-    case 6:
-      return 'Satur';
-    case 7:
-      return 'Sun';
-    default:
-      return '';
+  String getDayName(DateTime dateTime) {
+    switch (dateTime.weekday) {
+      case 1:
+        return 'Mon';
+      case 2:
+        return 'Tue';
+      case 3:
+        return 'Wed';
+      case 4:
+        return 'Thurs';
+      case 5:
+        return 'Fri';
+      case 6:
+        return 'Satur';
+      case 7:
+        return 'Sun';
+      default:
+        return '';
+    }
   }
-}
 
   // get the date for the start of the weel (sunday)
   DateTime startOfWeekDate() {
@@ -65,7 +65,7 @@ String getDayName(DateTime dateTime) {
 
     // get todays date
     DateTime today = DateTime.now();
-  
+
     // go backwards from todaay to find sunday
     for (int i = 0; i < 7; i++) {
       if (getDayName(today.subtract(Duration(days: i))) == 'Sun') {
@@ -75,7 +75,6 @@ String getDayName(DateTime dateTime) {
 
     return startOfWeek!;
   }
-
 
   /*
 
@@ -120,7 +119,6 @@ String getDayName(DateTime dateTime) {
     };
 
     for (var expense in overallExpenseList) {
-
       String date = convertDateTimeToString(expense.dateTime);
       double amount = double.parse(expense.amount);
 
