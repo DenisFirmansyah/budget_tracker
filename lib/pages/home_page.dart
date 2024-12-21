@@ -1,129 +1,251 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../components/expense_summary.dart';
-import '../components/expense_tile.dart';
 import '../data/expense_data.dart';
 import '../models/expense_item.dart';
 
-class HomePage extends StatefulWidget {
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ExpenseData()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey[200],
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Consumer<ExpenseData>(
+        builder: (context, expenseData, child) {
+          final totalIncome = expenseData.getTotalIncome();
+          final totalExpense = expenseData.getTotalExpense();
+          final balance = totalIncome - totalExpense;
+
+          return ListView(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF00D09E),
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(40)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Halo, Selamat Datang",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Yuk Berhemat Kawan",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Total Uang Anda :",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Rp${balance.toStringAsFixed(0)}",
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SummaryCard(
+                          label: "PEMASUKAN",
+                          amount: totalIncome,
+                          color: Colors.green,
+                        ),
+                        SummaryCard(
+                          label: "PENGELUARAN",
+                          amount: totalExpense,
+                          color: Colors.red,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Riwayat Transaksi",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ...expenseData
+                        .getAllExpenseList()
+                        .map((expense) => ListTile(
+                              leading: const Icon(Icons.monetization_on),
+                              title: Text(expense.name),
+                              subtitle: Text(
+                                  "${expense.dateTime.hour}:${expense.dateTime.minute} - ${expense.dateTime.day} ${expense.dateTime.month}"),
+                              trailing: Text(
+                                expense.amount.startsWith("-")
+                                    ? "-Rp${expense.amount.substring(1)}"
+                                    : "Rp${expense.amount}",
+                                style: TextStyle(
+                                  color: expense.amount.startsWith("-")
+                                      ? Colors.red
+                                      : Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => AddExpenseDialog(),
+        ),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  // text controllers
-  final newExpenseNameController = TextEditingController();
-  final newExpenseAmountController = TextEditingController();
+class SummaryCard extends StatelessWidget {
+  final String label;
+  final double amount;
+  final Color color;
+
+  const SummaryCard({
+    required this.label,
+    required this.amount,
+    required this.color,
+  });
 
   @override
-  void initState() {
-    super.initState();
-
-    // prepare data on staratup
-    Provider.of<ExpenseData>(context, listen: false).prepareData();
-  }
-
-  void addNewExpense() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add new expense'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // expense name
-            TextField(
-              controller: newExpenseNameController,
-              decoration: const InputDecoration(
-                hintText: "Expense name",
-              ),
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.4,
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
-
-            // expense amount
-            TextField(
-              controller: newExpenseAmountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: "Dollars",
-              ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Rp${amount.toStringAsFixed(0)}",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
-          ],
-        ),
-        actions: [
-          // save button
-          MaterialButton(onPressed: save, child: const Text('Save')),
-
-          // cancel button
-          MaterialButton(onPressed: cancel, child: const Text('Cancel')),
+          ),
         ],
       ),
     );
   }
+}
 
-  // delete function
-  void deleteExpense(ExpenseItem expense) {
-    Provider.of<ExpenseData>(context, listen: false).deleteExpense(expense);
-  }
-
-  // save function
-  void save() {
-    ExpenseItem newExpense = ExpenseItem(
-      name: newExpenseNameController.text,
-      amount: newExpenseAmountController.text,
-      dateTime: DateTime.now(),
-    );
-
-    // add the new expense
-    Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
-
-    Navigator.pop(context);
-    clear();
-  }
-
-  // cancel function
-  void cancel() {
-    Navigator.pop(context);
-    clear();
-  }
-
-  void clear() {
-    newExpenseNameController.clear();
-    newExpenseAmountController.clear();
-  }
+class AddExpenseDialog extends StatelessWidget {
+  final nameController = TextEditingController();
+  final amountController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ExpenseData>(
-      builder: (context, value, child) => Scaffold(
-        backgroundColor: Colors.grey[300],
-        floatingActionButton: FloatingActionButton(
-          onPressed: addNewExpense,
-          backgroundColor: Colors.black,
-          child: const Icon(Icons.add),
-        ),
-        body: ListView(
-          children: [
-            // weekly summary
-            ExpenseSummary(startOfWeek: value.startOfWeekDate()),
-
-            // exense list
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: value.getAllExpenseList().length,
-              itemBuilder: (context, index) => ExpenseTile(
-                name: value.getAllExpenseList()[index].name,
-                amount: value.getAllExpenseList()[index].amount,
-                dateTime: value.getAllExpenseList()[index].dateTime,
-                deleteTapped: (p0) =>
-                    deleteExpense(value.getAllExpenseList()[index]),
-              ),
-            ),
-          ],
-        ),
+    return AlertDialog(
+      title: const Text("Tambah Transaksi Baru"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: nameController,
+            decoration: const InputDecoration(hintText: "Nama Transaksi"),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: "Jumlah (Rp)"),
+          ),
+        ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text("Batal"),
+        ),
+        TextButton(
+          onPressed: () {
+            if (nameController.text.isNotEmpty &&
+                amountController.text.isNotEmpty) {
+              final expense = ExpenseItem(
+                name: nameController.text,
+                amount: amountController.text,
+                dateTime: DateTime.now(),
+              );
+              Provider.of<ExpenseData>(context, listen: false)
+                  .addNewExpense(expense);
+              Navigator.pop(context);
+            }
+          },
+          child: const Text("Simpan"),
+        ),
+      ],
     );
   }
 }
