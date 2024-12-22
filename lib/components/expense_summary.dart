@@ -26,14 +26,15 @@ class ExpenseSummary extends StatelessWidget {
     double? max = 100;
 
     List<double> values = [
-      value.calculateDailyExpenseSummary()[sunday] ?? 0,
-      value.calculateDailyExpenseSummary()[monday] ?? 0,
-      value.calculateDailyExpenseSummary()[tuesday] ?? 0,
-      value.calculateDailyExpenseSummary()[wednesday] ?? 0,
-      value.calculateDailyExpenseSummary()[thursday] ?? 0,
-      value.calculateDailyExpenseSummary()[friday] ?? 0,
-      value.calculateDailyExpenseSummary()[saturday] ?? 0,
-    ];
+    value.calculateDailyExpenseSummary()[sunday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[monday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[tuesday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[wednesday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[thursday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[friday]?['outcome'] ?? 0,
+    value.calculateDailyExpenseSummary()[saturday]?['outcome'] ?? 0,
+  ];
+
 
     // sort from smallest to largest
     values.sort();
@@ -56,14 +57,15 @@ class ExpenseSummary extends StatelessWidget {
     String saturday,
   ) {
     List<double> values = [
-      value.calculateDailyExpenseSummary()[sunday] ?? 0,
-      value.calculateDailyExpenseSummary()[monday] ?? 0,
-      value.calculateDailyExpenseSummary()[tuesday] ?? 0,
-      value.calculateDailyExpenseSummary()[wednesday] ?? 0,
-      value.calculateDailyExpenseSummary()[thursday] ?? 0,
-      value.calculateDailyExpenseSummary()[friday] ?? 0,
-      value.calculateDailyExpenseSummary()[saturday] ?? 0,
+      value.calculateDailyExpenseSummary()[sunday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[monday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[tuesday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[wednesday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[thursday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[friday]?['outcome'] ?? 0,
+      value.calculateDailyExpenseSummary()[saturday]?['outcome'] ?? 0,
     ];
+
 
     double total = 0;
     for (int i = 0; i < values.length; i++) {
@@ -113,15 +115,14 @@ class ExpenseSummary extends StatelessWidget {
           SizedBox(
             height: 200,
             child: MyBarGraph(
-              maxY: calculateMax(value, sunday, monday, tuesday, wednesday,
-                  thursday, friday, saturday),
-              sunAmount: value.calculateDailyExpenseSummary()[sunday] ?? 0,
-              monAmount: value.calculateDailyExpenseSummary()[monday] ?? 0,
-              tueAmount: value.calculateDailyExpenseSummary()[tuesday] ?? 0,
-              wedAmount: value.calculateDailyExpenseSummary()[wednesday] ?? 0,
-              thurAmount: value.calculateDailyExpenseSummary()[thursday] ?? 0,
-              friAmount: value.calculateDailyExpenseSummary()[friday] ?? 0,
-              satAmount: value.calculateDailyExpenseSummary()[saturday] ?? 0,
+              maxY: calculateMax(value, sunday, monday, tuesday, wednesday, thursday, friday, saturday),
+              sunAmount: value.calculateDailyExpenseSummary()[sunday]?['outcome'] ?? 0,
+              monAmount: value.calculateDailyExpenseSummary()[monday]?['outcome'] ?? 0,
+              tueAmount: value.calculateDailyExpenseSummary()[tuesday]?['outcome'] ?? 0,
+              wedAmount: value.calculateDailyExpenseSummary()[wednesday]?['outcome'] ?? 0,
+              thurAmount: value.calculateDailyExpenseSummary()[thursday]?['outcome'] ?? 0,
+              friAmount: value.calculateDailyExpenseSummary()[friday]?['outcome'] ?? 0,
+              satAmount: value.calculateDailyExpenseSummary()[saturday]?['outcome'] ?? 0,
             ),
           ),
         ],

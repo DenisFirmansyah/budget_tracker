@@ -29,11 +29,13 @@ class HiveDataBase {
       String name = savedExpenses[i][0];
       String amount = savedExpenses[i][1];
       DateTime dateTime = savedExpenses[i][2];
+      bool isIncome = savedExpenses[i][3];
 
       ExpenseItem expense = ExpenseItem(
         name: name,
         amount: amount,
         dateTime: dateTime,
+        isIncome: isIncome,
       );
 
       allExpenses.add(expense);

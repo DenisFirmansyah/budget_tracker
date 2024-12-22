@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../data/expense_data.dart';
 import '../models/expense_item.dart';
@@ -40,6 +41,14 @@ class HomePage extends StatelessWidget {
           final totalExpense = expenseData.getTotalExpense();
           final balance = totalIncome - totalExpense;
 
+          String formatCurrency(double value) {
+            return NumberFormat.currency(
+              locale: 'id',
+              symbol: 'Rp',
+              decimalDigits: 0,
+            ).format(value);
+          }
+
           return ListView(
             children: [
               Container(
@@ -77,7 +86,7 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Rp${balance.toStringAsFixed(0)}",
+                      formatCurrency(balance),
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -117,25 +126,28 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    ...expenseData
-                        .getAllExpenseList()
-                        .map((expense) => ListTile(
-                              leading: const Icon(Icons.monetization_on),
-                              title: Text(expense.name),
-                              subtitle: Text(
-                                  "${expense.dateTime.hour}:${expense.dateTime.minute} - ${expense.dateTime.day} ${expense.dateTime.month}"),
-                              trailing: Text(
-                                expense.amount.startsWith("-")
-                                    ? "-Rp${expense.amount.substring(1)}"
-                                    : "Rp${expense.amount}",
-                                style: TextStyle(
-                                  color: expense.amount.startsWith("-")
-                                      ? Colors.red
-                                      : Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )),
+                    ...expenseData.getAllExpenseList().map((expense) =>
+                        ListTile(
+                          leading: Icon(
+                            expense.isIncome
+                                ? Icons.arrow_circle_down // Ikon untuk pemasukan
+                                : Icons.arrow_circle_up, // Ikon untuk pengeluaran
+                            color:
+                                expense.isIncome ? Colors.green : Colors.red,
+                          ),
+                          title: Text(expense.name),
+                          subtitle: Text(
+                            "${expense.dateTime.hour}:${expense.dateTime.minute} - ${expense.dateTime.day}/${expense.dateTime.month}/${expense.dateTime.year}",
+                          ),
+                          trailing: Text(
+                            formatCurrency(double.parse(expense.amount)),
+                            style: TextStyle(
+                              color:
+                                  expense.isIncome ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )),
                   ],
                 ),
               ),
@@ -167,6 +179,14 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formatCurrency(double value) {
+      return NumberFormat.currency(
+        locale: 'id',
+        symbol: 'Rp',
+        decimalDigits: 0,
+      ).format(value);
+    }
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.4,
       padding: const EdgeInsets.all(12.0),
@@ -186,7 +206,7 @@ class SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "Rp${amount.toStringAsFixed(0)}",
+            formatCurrency(amount),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -199,9 +219,15 @@ class SummaryCard extends StatelessWidget {
   }
 }
 
-class AddExpenseDialog extends StatelessWidget {
+class AddExpenseDialog extends StatefulWidget {
+  @override
+  _AddExpenseDialogState createState() => _AddExpenseDialogState();
+}
+
+class _AddExpenseDialogState extends State<AddExpenseDialog> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
+  String transactionType = 'Income';
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +236,24 @@ class AddExpenseDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          DropdownButton<String>(
+            value: transactionType,
+            onChanged: (value) {
+              setState(() {
+                transactionType = value!;
+              });
+            },
+            items: const [
+              DropdownMenuItem(
+                value: 'Income',
+                child: Text("Pemasukan"),
+              ),
+              DropdownMenuItem(
+                value: 'Outcome',
+                child: Text("Pengeluaran"),
+              ),
+            ],
+          ),
           TextField(
             controller: nameController,
             decoration: const InputDecoration(hintText: "Nama Transaksi"),
@@ -237,6 +281,7 @@ class AddExpenseDialog extends StatelessWidget {
                 name: nameController.text,
                 amount: amountController.text,
                 dateTime: DateTime.now(),
+                isIncome: transactionType == 'Income',
               );
               Provider.of<ExpenseData>(context, listen: false)
                   .addNewExpense(expense);

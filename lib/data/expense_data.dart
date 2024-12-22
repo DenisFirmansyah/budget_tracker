@@ -113,36 +113,49 @@ class ExpenseData extends ChangeNotifier {
 
   */
 
-  Map<String, double> calculateDailyExpenseSummary() {
-    Map<String, double> dailyExpenseSummary = {
-      // date (yyyymmdd) : amountTotalForDay
-    };
+  Map<String, Map<String, double>> calculateDailyExpenseSummary() {
+  Map<String, Map<String, double>> dailySummary = {};
 
-    for (var expense in overallExpenseList) {
-      String date = convertDateTimeToString(expense.dateTime);
-      double amount = double.parse(expense.amount);
+  for (var expense in overallExpenseList) {
+    String date = convertDateTimeToString(expense.dateTime);
 
-      if (dailyExpenseSummary.containsKey(date)) {
-        double currentAmount = dailyExpenseSummary[date]!;
-        currentAmount += amount;
-        dailyExpenseSummary[date] = currentAmount;
-      } else {
-        dailyExpenseSummary.addAll({date: amount});
-      }
+    if (!dailySummary.containsKey(date)) {
+      dailySummary[date] = {'income': 0, 'outcome': 0};
     }
 
-    return dailyExpenseSummary;
-  }
-
-  getTotalIncome() {
-    return 0;
-  }
-
-  getTotalExpense() {
-    double total = 0;
-    for (var el in overallExpenseList) {
-      total += double.parse(el.amount);
+    if (expense.isIncome) {
+      dailySummary[date]!['income'] =
+          dailySummary[date]!['income']! + double.parse(expense.amount);
+    } else {
+      dailySummary[date]!['outcome'] =
+          dailySummary[date]!['outcome']! + double.parse(expense.amount);
     }
-    return total;
   }
+
+  return dailySummary;
+}
+
+
+// Total pemasukan
+double getTotalIncome() {
+  double total = 0;
+  for (var expense in overallExpenseList) {
+    if (expense.isIncome) {
+      total += double.parse(expense.amount);
+    }
+  }
+  return total;
+}
+
+// Total pengeluaran
+double getTotalExpense() {
+  double total = 0;
+  for (var expense in overallExpenseList) {
+    if (!expense.isIncome) {
+      total += double.parse(expense.amount);
+    }
+  }
+  return total;
+}
+
 }
