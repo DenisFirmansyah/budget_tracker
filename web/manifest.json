@@ -1,6 +1,6 @@
 {
-    "name": "budget_tracker",
-    "short_name": "budget_tracker",
+    "name": "Hemat Uang",
+    "short_name": "Hemat Uang",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

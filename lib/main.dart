@@ -6,27 +6,28 @@ import 'package:provider/provider.dart';
 import 'data/expense_data.dart';
 import 'pages/home_page.dart';
 
+// FirebaseOptions untuk web
+const firebaseWebOptions = FirebaseOptions(
+  apiKey: "AIzaSyCu_t0QLvOUKzb6oR6EskLpleUlkFpiAbw",
+  authDomain: "budget-tracker-8bc39.firebaseapp.com",
+  projectId: "budget-tracker-8bc39",
+  storageBucket: "budget-tracker-8bc39.firebasestorage.app",
+  messagingSenderId: "965263215869",
+  appId: "1:965263215869:web:687a494cfd5d0a52e70294",
+  measurementId: "G-JTN71QRT62",
+);
+
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await checkAndSignInAnonymously();
 
   if(kIsWeb) {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: "AIzaSyCu_t0QLvOUKzb6oR6EskLpleUlkFpiAbw",
-        authDomain: "budget-tracker-8bc39.firebaseapp.com",
-        projectId: "budget-tracker-8bc39",
-        storageBucket: "budget-tracker-8bc39.firebasestorage.app",
-        messagingSenderId: "965263215869",
-        appId: "1:965263215869:web:687a494cfd5d0a52e70294",
-        measurementId: "G-JTN71QRT62"
-      )
-    );
+    await Firebase.initializeApp(options: firebaseWebOptions);
   } else {
     await Firebase.initializeApp();
   }
+
+  await checkAndSignInAnonymously();
 
   await FirebaseAuth.instance.signInAnonymously();
 
