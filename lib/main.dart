@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'data/expense_data.dart';
 import 'pages/home_page.dart';
@@ -9,6 +9,9 @@ import 'pages/home_page.dart';
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await checkAndSignInAnonymously();
+
   if(kIsWeb) {
     await Firebase.initializeApp(
       options: FirebaseOptions(
@@ -24,14 +27,28 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  
-  // // initialize hive
-  // await Hive.initFlutter();
 
-  // // open a hive box
-  // await Hive.openBox("expense_database");
+  await FirebaseAuth.instance.signInAnonymously();
 
   runApp(const MyApp());
+}
+
+Future<void> checkAndSignInAnonymously() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    await signInAnonymously();
+  } else {
+    debugPrint("User already signed in: ${user.uid}");
+  }
+}
+
+Future<void> signInAnonymously() async {
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+    debugPrint("User signed in as: ${userCredential.user?.uid}");
+  } catch (e) {
+    debugPrint("Error signing in anonymously: $e");
+  }
 }
 
 class MyApp extends StatelessWidget {

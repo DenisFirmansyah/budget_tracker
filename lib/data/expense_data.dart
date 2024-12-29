@@ -1,12 +1,14 @@
-import 'package:budget_tracker/data/hive_database.dart';
 import 'package:budget_tracker/datetime/date_time_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseData extends ChangeNotifier {
   // Referensi ke koleksi Firestore
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final String _userId = FirebaseAuth.instance.currentUser!.uid;
   
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];
@@ -14,6 +16,10 @@ class ExpenseData extends ChangeNotifier {
   // get expense list
   List<ExpenseItem> getAllExpenseList() {
     return overallExpenseList;
+  }
+
+  ExpenseData() {
+    fetchExpenses(); // Ambil data saat ExpenseData diinisialisasi
   }
 
   // Ambil daftar pengeluaran dari Firestore
@@ -48,6 +54,7 @@ class ExpenseData extends ChangeNotifier {
   Future<void> addNewExpense(ExpenseItem newExpense) async {
     try {
       final docRef = await _firestore.collection('expenses').add({
+        'userId': _userId, // Tambahkan userId ke data
         'name': newExpense.name,
         'amount': newExpense.amount,
         'date': newExpense.dateTime.toIso8601String(),
