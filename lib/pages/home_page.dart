@@ -278,6 +278,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             if (nameController.text.isNotEmpty &&
                 amountController.text.isNotEmpty) {
               final expense = ExpenseItem(
+                id: '',
                 name: nameController.text,
                 amount: amountController.text,
                 dateTime: DateTime.now(),

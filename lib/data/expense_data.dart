@@ -1,9 +1,13 @@
 import 'package:budget_tracker/data/hive_database.dart';
 import 'package:budget_tracker/datetime/date_time_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseData extends ChangeNotifier {
+  // Referensi ke koleksi Firestore
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];
 
@@ -12,30 +16,73 @@ class ExpenseData extends ChangeNotifier {
     return overallExpenseList;
   }
 
-  // prepare data to display
-  final db = HiveDataBase();
-  void prepareData() {
-    // if there exists data, get it
-    if (db.readData().isNotEmpty) {
-      overallExpenseList = db.readData();
+  // Ambil daftar pengeluaran dari Firestore
+  Future<void> fetchExpenses() async {
+    try {
+      final snapshot = await _firestore.collection('expenses').get();
+      overallExpenseList = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return ExpenseItem(
+          id: doc.id,
+          name: data['name'] ?? '',
+          amount: data['amount'].toString(),
+          dateTime: DateTime.parse(data['date']),
+          isIncome: data['isIncome'] ?? false,
+        );
+      }).toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching data: $e');
     }
   }
+  // prepare data to display
+  // final db = HiveDataBase();
+  // void prepareData() {
+  //   // if there exists data, get it
+  //   if (db.readData().isNotEmpty) {
+  //     overallExpenseList = db.readData();
+  //   }
+  // }
 
-  // add new expense
-  void addNewExpense(ExpenseItem newExpense) {
-    overallExpenseList.add(newExpense);
-
-    notifyListeners();
-    db.saveData(overallExpenseList);
+  // Tambahkan pengeluaran baru
+  Future<void> addNewExpense(ExpenseItem newExpense) async {
+    try {
+      final docRef = await _firestore.collection('expenses').add({
+        'name': newExpense.name,
+        'amount': newExpense.amount,
+        'date': newExpense.dateTime.toIso8601String(),
+        'isIncome': newExpense.isIncome,
+      });
+      // Tambahkan juga ke list lokal
+      overallExpenseList.add(newExpense.copyWith(id: docRef.id));
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding expense: $e');
+    }
   }
+  // void addNewExpense(ExpenseItem newExpense) {
+  //   overallExpenseList.add(newExpense);
 
-  // delete expense
-  void deleteExpense(ExpenseItem Expense) {
-    overallExpenseList.remove(Expense);
+  //   notifyListeners();
+  //   db.saveData(overallExpenseList);
+  // }
 
-    notifyListeners();
-    db.saveData(overallExpenseList);
+  // Hapus pengeluaran
+  Future<void> deleteExpense(ExpenseItem expense) async {
+    try {
+      await _firestore.collection('expenses').doc(expense.id).delete();
+      overallExpenseList.removeWhere((item) => item.id == expense.id);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting expense: $e');
+    }
   }
+  // void deleteExpense(ExpenseItem Expense) {
+  //   overallExpenseList.remove(Expense);
+
+  //   notifyListeners();
+  //   db.saveData(overallExpenseList);
+  // }
 
   // get weekday (mon, tues, etc) from datTime object
   String getDayName(DateTime dateTime) {

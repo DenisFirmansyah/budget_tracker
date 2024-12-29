@@ -11,6 +11,7 @@ class HiveDataBase {
 
     for (var expense in allExpense) {
       List<dynamic> allExpensesFormatted = [
+        expense.id,
         expense.name,
         expense.amount,
         expense.dateTime,
@@ -32,6 +33,7 @@ class HiveDataBase {
       bool isIncome = savedExpenses[i][3];
 
       ExpenseItem expense = ExpenseItem(
+        id: '',
         name: name,
         amount: amount,
         dateTime: dateTime,
