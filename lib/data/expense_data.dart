@@ -8,7 +8,7 @@ class ExpenseData extends ChangeNotifier {
   // Referensi ke koleksi Firestore
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final String _userId = FirebaseAuth.instance.currentUser!.uid;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
   
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];
@@ -25,10 +25,14 @@ class ExpenseData extends ChangeNotifier {
   // Ambil daftar pengeluaran dari Firestore
   Future<void> fetchExpenses() async {
     try {
-      final snapshot = await _firestore.collection('expenses').get();
+      final snapshot = await _firestore
+        .collection('expenses')
+        .where('userId', isEqualTo: userId)
+        .get();
       overallExpenseList = snapshot.docs.map((doc) {
         final data = doc.data();
         return ExpenseItem(
+          userId: data['userId'],
           id: doc.id,
           name: data['name'] ?? '',
           amount: data['amount'].toString(),
@@ -51,20 +55,23 @@ class ExpenseData extends ChangeNotifier {
   // }
 
   // Tambahkan pengeluaran baru
-  Future<void> addNewExpense(ExpenseItem newExpense) async {
-    try {
-      final docRef = await _firestore.collection('expenses').add({
-        'userId': _userId, // Tambahkan userId ke data
+  Future<void> addNewExpense(ExpenseItem expense) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid; // Ambil userId
+    if (userId != null) {
+      final newExpense = expense.copyWith(userId: userId); // Tambahkan userId ke item
+      await FirebaseFirestore.instance.collection('expenses').add({
+        'userId': userId,
+        'id' : newExpense.id,
         'name': newExpense.name,
         'amount': newExpense.amount,
         'date': newExpense.dateTime.toIso8601String(),
         'isIncome': newExpense.isIncome,
       });
-      // Tambahkan juga ke list lokal
-      overallExpenseList.add(newExpense.copyWith(id: docRef.id));
+      
+      overallExpenseList.add(newExpense);
       notifyListeners();
-    } catch (e) {
-      debugPrint('Error adding expense: $e');
+    } else {
+      throw Exception('User not authenticated');
     }
   }
   // void addNewExpense(ExpenseItem newExpense) {

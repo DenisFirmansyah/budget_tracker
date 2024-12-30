@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -278,14 +279,14 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             if (nameController.text.isNotEmpty &&
                 amountController.text.isNotEmpty) {
               final expense = ExpenseItem(
+                userId: FirebaseAuth.instance.currentUser!.uid,
                 id: '',
                 name: nameController.text,
                 amount: amountController.text,
                 dateTime: DateTime.now(),
                 isIncome: transactionType == 'Income',
               );
-              Provider.of<ExpenseData>(context, listen: false)
-                  .addNewExpense(expense);
+              Provider.of<ExpenseData>(context, listen: false).addNewExpense(expense);
               Navigator.pop(context);
             }
           },

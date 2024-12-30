@@ -1,4 +1,5 @@
 class ExpenseItem {
+  final String userId;
   final String id;
   final String name;
   final String amount;
@@ -6,6 +7,7 @@ class ExpenseItem {
   final bool isIncome;
 
   ExpenseItem({
+    required this.userId,
     required this.id,
     required this.name,
     required this.amount,
@@ -15,6 +17,7 @@ class ExpenseItem {
 
   // Untuk menyalin item dengan perubahan
   ExpenseItem copyWith({
+    String? userId,
     String? id,
     String? name,
     String? amount,
@@ -22,6 +25,7 @@ class ExpenseItem {
     bool? isIncome,
   }) {
     return ExpenseItem(
+      userId: userId ?? this.userId,
       id: id ?? this.id,
       name: name ?? this.name,
       amount: amount ?? this.amount,

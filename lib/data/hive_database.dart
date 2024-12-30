@@ -33,6 +33,7 @@ class HiveDataBase {
       bool isIncome = savedExpenses[i][3];
 
       ExpenseItem expense = ExpenseItem(
+        userId: '',
         id: '',
         name: name,
         amount: amount,
