@@ -36,125 +36,177 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<ExpenseData>(
-        builder: (context, expenseData, child) {
-          final totalIncome = expenseData.getTotalIncome();
-          final totalExpense = expenseData.getTotalExpense();
-          final balance = totalIncome - totalExpense;
+      body: SafeArea(
+        child: Consumer<ExpenseData>(
+          builder: (context, expenseData, child) {
+            final totalIncome = expenseData.getTotalIncome();
+            final totalExpense = expenseData.getTotalExpense();
+            final balance = totalIncome - totalExpense;
 
-          String formatCurrency(double value) {
-            return NumberFormat.currency(
-              locale: 'id',
-              symbol: 'Rp',
-              decimalDigits: 0,
-            ).format(value);
-          }
+            String formatCurrency(double value) {
+              return NumberFormat.currency(
+                locale: 'id',
+                symbol: 'Rp',
+                decimalDigits: 0,
+              ).format(value);
+            }
 
-          return ListView(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF00D09E),
-                  borderRadius:
-                      BorderRadius.vertical(bottom: Radius.circular(40)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Halo, Selamat Datang",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      "Yuk Berhemat Kawan",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Total Uang Anda :",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      formatCurrency(balance),
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SummaryCard(
-                          label: "PEMASUKAN",
-                          amount: totalIncome,
-                          color: Colors.green,
+            return Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00D09E),
+                    borderRadius:
+                        BorderRadius.vertical(bottom: Radius.circular(40)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Halo, Selamat Datang di Hemat Uang",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
                         ),
-                        SummaryCard(
-                          label: "PENGELUARAN",
-                          amount: totalExpense,
-                          color: Colors.red,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Riwayat Transaksi",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    ...expenseData.getAllExpenseList().map((expense) =>
-                        ListTile(
-                          leading: Icon(
-                            expense.isIncome
-                                ? Icons.arrow_circle_down // Ikon untuk pemasukan
-                                : Icons.arrow_circle_up, // Ikon untuk pengeluaran
-                            color:
-                                expense.isIncome ? Colors.green : Colors.red,
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Yuk Gunakan Aplikasi Ini Supaya Kita Lebih Berhemat",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Total Uang Anda :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        formatCurrency(balance),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SummaryCard(
+                            label: "PEMASUKAN",
+                            amount: totalIncome,
+                            color: Colors.green,
                           ),
-                          title: Text(expense.name),
-                          subtitle: Text(
-                            "${expense.dateTime.hour}:${expense.dateTime.minute} - ${expense.dateTime.day}/${expense.dateTime.month}/${expense.dateTime.year}",
+                          SummaryCard(
+                            label: "PENGELUARAN",
+                            amount: totalExpense,
+                            color: Colors.red,
                           ),
-                          trailing: Text(
-                            formatCurrency(double.parse(expense.amount)),
-                            style: TextStyle(
-                              color:
-                                  expense.isIncome ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        )),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Riwayat Transaksi",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              final expense =
+                                  expenseData.getAllExpenseList()[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              leading: const Icon(Icons.edit),
+                                              title: const Text("Ubah Data"),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                showEditDialog(
+                                                    context, expense);
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: const Icon(Icons.delete),
+                                              title: const Text("Hapus Data"),
+                                              onTap: () {
+                                                Provider.of<ExpenseData>(
+                                                        context,
+                                                        listen: false)
+                                                    .deleteExpense(expense);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: ListTile(
+                                  leading: Icon(
+                                    expense.isIncome
+                                        ? Icons.arrow_circle_down
+                                        : Icons.arrow_circle_up,
+                                    color: expense.isIncome
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                  title: Text(expense.name),
+                                  subtitle: Text(
+                                    "${expense.dateTime.hour}:${expense.dateTime.minute} - ${expense.dateTime.day}/${expense.dateTime.month}/${expense.dateTime.year}",
+                                  ),
+                                  trailing: Text(
+                                    formatCurrency(
+                                        double.parse(expense.amount)),
+                                    style: TextStyle(
+                                      color: expense.isIncome
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: expenseData.getAllExpenseList().length,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(
@@ -163,6 +215,7 @@ class HomePage extends StatelessWidget {
         ),
         child: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }
@@ -286,7 +339,8 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                 dateTime: DateTime.now(),
                 isIncome: transactionType == 'Income',
               );
-              Provider.of<ExpenseData>(context, listen: false).addNewExpense(expense);
+              Provider.of<ExpenseData>(context, listen: false)
+                  .addNewExpense(expense);
               Navigator.pop(context);
             }
           },
@@ -295,4 +349,70 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
       ],
     );
   }
+}
+
+void showEditDialog(BuildContext context, ExpenseItem expense) {
+  final nameController = TextEditingController(text: expense.name);
+  final amountController = TextEditingController(text: expense.amount);
+  bool isIncome = expense.isIncome;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Ubah Transaksi"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButton<bool>(
+              value: isIncome,
+              onChanged: (value) {
+                isIncome = value!;
+              },
+              items: const [
+                DropdownMenuItem(value: true, child: Text("Pemasukan")),
+                DropdownMenuItem(value: false, child: Text("Pengeluaran")),
+              ],
+            ),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(hintText: "Nama Transaksi"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(hintText: "Jumlah (Rp)"),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (nameController.text.isNotEmpty &&
+                  amountController.text.isNotEmpty) {
+                final updatedData = {
+                  'name': nameController.text,
+                  'amount': amountController.text,
+                  'date': DateTime.now().toIso8601String(),
+                  'isIncome': isIncome,
+                };
+
+                await Provider.of<ExpenseData>(context, listen: false)
+                    .updateExpense(expense, updatedData);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text("Simpan"),
+          ),
+        ],
+      );
+    },
+  );
 }

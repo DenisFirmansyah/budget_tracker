@@ -1,3 +1,4 @@
+import 'package:budget_tracker/pages/splash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
       create: (context) => ExpenseData(),
       builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: SplashScreen(),
       ),
     );
   }

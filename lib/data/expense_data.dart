@@ -45,14 +45,6 @@ class ExpenseData extends ChangeNotifier {
       debugPrint('Error fetching data: $e');
     }
   }
-  // prepare data to display
-  // final db = HiveDataBase();
-  // void prepareData() {
-  //   // if there exists data, get it
-  //   if (db.readData().isNotEmpty) {
-  //     overallExpenseList = db.readData();
-  //   }
-  // }
 
   // Tambahkan pengeluaran baru
   Future<void> addNewExpense(ExpenseItem expense) async {
@@ -74,12 +66,35 @@ class ExpenseData extends ChangeNotifier {
       throw Exception('User not authenticated');
     }
   }
-  // void addNewExpense(ExpenseItem newExpense) {
-  //   overallExpenseList.add(newExpense);
 
-  //   notifyListeners();
-  //   db.saveData(overallExpenseList);
-  // }
+  // Perbarui pengeluaran
+  Future<void> updateExpense(ExpenseItem expense, Map<String, dynamic> updatedData) async {
+    try {
+      // Pastikan tidak mengirimkan data 'date' jika tidak ada perubahan pada tanggal
+      if (updatedData.containsKey('date')) {
+        updatedData.remove('date');  // Hapus 'date' dari data yang akan diperbarui
+      }
+
+      // Perbarui data di Firestore
+      await _firestore.collection('expenses').doc(expense.id).update(updatedData);
+
+      // Perbarui data di daftar lokal
+      final index = overallExpenseList.indexWhere((item) => item.id == expense.id);
+      if (index != -1) {
+        overallExpenseList[index] = ExpenseItem(
+          userId: expense.userId,
+          id: expense.id,
+          name: updatedData['name'] ?? expense.name,
+          amount: updatedData['amount'] ?? expense.amount,
+          dateTime: expense.dateTime,
+          isIncome: updatedData['isIncome'] ?? expense.isIncome,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error updating expense: $e');
+    }
+  }
 
   // Hapus pengeluaran
   Future<void> deleteExpense(ExpenseItem expense) async {
@@ -91,12 +106,6 @@ class ExpenseData extends ChangeNotifier {
       debugPrint('Error deleting expense: $e');
     }
   }
-  // void deleteExpense(ExpenseItem Expense) {
-  //   overallExpenseList.remove(Expense);
-
-  //   notifyListeners();
-  //   db.saveData(overallExpenseList);
-  // }
 
   // get weekday (mon, tues, etc) from datTime object
   String getDayName(DateTime dateTime) {
@@ -136,43 +145,6 @@ class ExpenseData extends ChangeNotifier {
 
     return startOfWeek!;
   }
-
-  /*
-
-  convert overall list of expenses into a daily expense summmary
-
-  e.g.
-
-  overallExpenseList =
-  [
-  
-  [ food, 2024/12/17, Rp.50000],
-  [ hat, 2024/12/17, Rp.25000],
-  [ drinks, 2024/12/17, Rp.20000],
-  [ food, 2024/12/17, Rp.5000],
-  [ food, 2024/12/17, Rp.6000],
-  [ food, 2024/12/17, Rp.7000],
-
-  ]
-
-  ->
-
-  DailyExpenseSummary = 
-
-
-  [
-  
-  [ 2024/12/17: Rp.50000 ].
-  [ 2024/12/17, Rp.25000 ].
-  [ 2024/12/17, Rp.20000 ],
-  [ 2024/12/17, Rp.5000 ],
-  [ 2024/12/17, Rp.6000 ],
-  [ 2024/12/17, Rp.7000 ],
-  
-  ]
-
-
-  */
 
   Map<String, Map<String, double>> calculateDailyExpenseSummary() {
   Map<String, Map<String, double>> dailySummary = {};
