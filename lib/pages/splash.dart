@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/icon/icon.png', width: 200, height: 200), // Menampilkan logo
+            Image.asset('assets/icon/save.png', width: 200, height: 200),
             const SizedBox(height: 20),
             const Text(
               'Hemat Uang',

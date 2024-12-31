@@ -1,5 +1,5 @@
 {
     "java.compile.nullAnalysis.mode": "disabled",
     "cmake.ignoreCMakeListsMissing": true,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'data/expense_data.dart';
-import 'pages/home_page.dart';
 
 // FirebaseOptions untuk web
 const firebaseWebOptions = FirebaseOptions(
