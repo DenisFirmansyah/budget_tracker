@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -328,7 +329,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
           child: const Text("Batal"),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             if (nameController.text.isNotEmpty &&
                 amountController.text.isNotEmpty) {
               final expense = ExpenseItem(
@@ -339,8 +340,24 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                 dateTime: DateTime.now(),
                 isIncome: transactionType == 'Income',
               );
-              Provider.of<ExpenseData>(context, listen: false)
-                  .addNewExpense(expense);
+              try {
+      // Tambahkan data ke Firestore
+      final docRef = await FirebaseFirestore.instance.collection('expenses').add({
+        'userId': expense.userId,
+        'name': expense.name,
+        'amount': expense.amount,
+        'date': expense.dateTime.toIso8601String(),
+        'isIncome': expense.isIncome,
+      });
+
+      // Perbarui ID pada objek ExpenseItem
+      final updatedExpense = expense.copyWith(id: docRef.id);
+
+      // Simpan ke Provider
+      Provider.of<ExpenseData>(context, listen: false).addNewExpense(updatedExpense);
+    } catch (e) {
+      debugPrint('Error adding expense: $e');
+    }
               Navigator.pop(context);
             }
           },

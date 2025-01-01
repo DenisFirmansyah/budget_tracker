@@ -9,7 +9,7 @@ class ExpenseData extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final String userId = FirebaseAuth.instance.currentUser!.uid;
-  
+
   // list of ALl expenses
   List<ExpenseItem> overallExpenseList = [];
 
@@ -25,10 +25,11 @@ class ExpenseData extends ChangeNotifier {
   // Ambil daftar pengeluaran dari Firestore
   Future<void> fetchExpenses() async {
     try {
+      overallExpenseList.clear();
       final snapshot = await _firestore
-        .collection('expenses')
-        .where('userId', isEqualTo: userId)
-        .get();
+          .collection('expenses')
+          .where('userId', isEqualTo: userId)
+          .get();
       overallExpenseList = snapshot.docs.map((doc) {
         final data = doc.data();
         return ExpenseItem(
@@ -50,16 +51,19 @@ class ExpenseData extends ChangeNotifier {
   Future<void> addNewExpense(ExpenseItem expense) async {
     final userId = FirebaseAuth.instance.currentUser?.uid; // Ambil userId
     if (userId != null) {
-      final newExpense = expense.copyWith(userId: userId); // Tambahkan userId ke item
-      await FirebaseFirestore.instance.collection('expenses').add({
+      final newExpense =
+          expense.copyWith(userId: userId); // Tambahkan userId ke item
+      final docRef =
+          await FirebaseFirestore.instance.collection('expenses').add({
         'userId': userId,
-        'id' : newExpense.id,
         'name': newExpense.name,
         'amount': newExpense.amount,
         'date': newExpense.dateTime.toIso8601String(),
         'isIncome': newExpense.isIncome,
       });
-      
+
+      expense = expense.copyWith(id: docRef.id);
+
       overallExpenseList.add(newExpense);
       notifyListeners();
     } else {
@@ -68,27 +72,30 @@ class ExpenseData extends ChangeNotifier {
   }
 
   // Perbarui pengeluaran
-  Future<void> updateExpense(ExpenseItem expense, Map<String, dynamic> updatedData) async {
+  Future<void> updateExpense(
+      ExpenseItem expense, Map<String, dynamic> updatedData) async {
     try {
       // Pastikan tidak mengirimkan data 'date' jika tidak ada perubahan pada tanggal
       if (updatedData.containsKey('date')) {
-        updatedData.remove('date');  // Hapus 'date' dari data yang akan diperbarui
+        updatedData
+            .remove('date'); // Hapus 'date' dari data yang akan diperbarui
       }
 
       // Perbarui data di Firestore
-      await _firestore.collection('expenses').doc(expense.id).update(updatedData);
+      await _firestore
+          .collection('expenses')
+          .doc(expense.id)
+          .update(updatedData);
 
       // Perbarui data di daftar lokal
-      final index = overallExpenseList.indexWhere((item) => item.id == expense.id);
+      final index =
+          overallExpenseList.indexWhere((item) => item.id == expense.id);
       if (index != -1) {
-        overallExpenseList[index] = ExpenseItem(
-          userId: expense.userId,
-          id: expense.id,
-          name: updatedData['name'] ?? expense.name,
-          amount: updatedData['amount'] ?? expense.amount,
-          dateTime: expense.dateTime,
-          isIncome: updatedData['isIncome'] ?? expense.isIncome,
-        );
+      overallExpenseList[index] = overallExpenseList[index].copyWith(
+        name: updatedData['name'],
+        amount: updatedData['amount'],
+        isIncome: updatedData['isIncome'],
+      );
         notifyListeners();
       }
     } catch (e) {
@@ -98,6 +105,11 @@ class ExpenseData extends ChangeNotifier {
 
   // Hapus pengeluaran
   Future<void> deleteExpense(ExpenseItem expense) async {
+    if (expense.id.isEmpty) {
+      debugPrint('Expense ID is empty. Cannot delete this item.');
+      return;
+    }
+
     try {
       await _firestore.collection('expenses').doc(expense.id).delete();
       overallExpenseList.removeWhere((item) => item.id == expense.id);
@@ -147,48 +159,46 @@ class ExpenseData extends ChangeNotifier {
   }
 
   Map<String, Map<String, double>> calculateDailyExpenseSummary() {
-  Map<String, Map<String, double>> dailySummary = {};
+    Map<String, Map<String, double>> dailySummary = {};
 
-  for (var expense in overallExpenseList) {
-    String date = convertDateTimeToString(expense.dateTime);
+    for (var expense in overallExpenseList) {
+      String date = convertDateTimeToString(expense.dateTime);
 
-    if (!dailySummary.containsKey(date)) {
-      dailySummary[date] = {'income': 0, 'outcome': 0};
+      if (!dailySummary.containsKey(date)) {
+        dailySummary[date] = {'income': 0, 'outcome': 0};
+      }
+
+      if (expense.isIncome) {
+        dailySummary[date]!['income'] =
+            dailySummary[date]!['income']! + double.parse(expense.amount);
+      } else {
+        dailySummary[date]!['outcome'] =
+            dailySummary[date]!['outcome']! + double.parse(expense.amount);
+      }
     }
 
-    if (expense.isIncome) {
-      dailySummary[date]!['income'] =
-          dailySummary[date]!['income']! + double.parse(expense.amount);
-    } else {
-      dailySummary[date]!['outcome'] =
-          dailySummary[date]!['outcome']! + double.parse(expense.amount);
-    }
+    return dailySummary;
   }
-
-  return dailySummary;
-}
-
 
 // Total pemasukan
-double getTotalIncome() {
-  double total = 0;
-  for (var expense in overallExpenseList) {
-    if (expense.isIncome) {
-      total += double.parse(expense.amount);
+  double getTotalIncome() {
+    double total = 0;
+    for (var expense in overallExpenseList) {
+      if (expense.isIncome) {
+        total += double.parse(expense.amount);
+      }
     }
+    return total;
   }
-  return total;
-}
 
 // Total pengeluaran
-double getTotalExpense() {
-  double total = 0;
-  for (var expense in overallExpenseList) {
-    if (!expense.isIncome) {
-      total += double.parse(expense.amount);
+  double getTotalExpense() {
+    double total = 0;
+    for (var expense in overallExpenseList) {
+      if (!expense.isIncome) {
+        total += double.parse(expense.amount);
+      }
     }
+    return total;
   }
-  return total;
-}
-
 }

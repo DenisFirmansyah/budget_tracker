@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:965263215869:android:c1aab12036de1208e70294",
+        "mobilesdk_app_id": "1:965263215869:android:e5e066d2b99a4720e70294",
         "android_client_info": {
-          "package_name": "com.example.budget_tracker"
+          "package_name": "com.denisfirmansyah.budget_tracker"
         }
       },
       "oauth_client": [],
@@ -25,5 +25,5 @@
       }
     }
   ],
-  "configuration_version": "1"
+  "configuration_version": "1.0.1"
 }
